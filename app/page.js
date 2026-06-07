@@ -1,14 +1,9 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import SiteHeader from './components/SiteHeader';
 
 const planCategories = [
-  {
-    id: 'all',
-    label: 'All Programs',
-    description: 'Compare every category at a glance and choose the plan that fits your trader profile.',
-  },
   {
     id: 'standard',
     label: 'Standard',
@@ -128,10 +123,124 @@ const planCategories = [
 ];
 
 export default function MyFXFundingLandingPage() {
-  const [activeCategory, setActiveCategory] = useState('all');
+  const [activeCategory, setActiveCategory] = useState('standard');
+  const [theme, setTheme] = useState('dark');
+  const [lang, setLang] = useState('en');
+
+  useEffect(() => {
+    try {
+      const storedLang = localStorage.getItem('myfx_lang');
+      const storedTheme = localStorage.getItem('myfx_theme');
+      if (storedLang) setLang(storedLang);
+      if (storedTheme) setTheme(storedTheme);
+    } catch (e) {}
+  }, []);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('myfx_lang', lang);
+    } catch (e) {}
+  }, [lang]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('myfx_theme', theme);
+    } catch (e) {}
+  }, [theme]);
+
+  useEffect(() => {
+    const onStorage = (e) => {
+      if (!e.key) return;
+      if (e.key === 'myfx_lang') setLang(e.newValue || 'en');
+      if (e.key === 'myfx_theme') setTheme(e.newValue || 'dark');
+    };
+    window.addEventListener('storage', onStorage);
+    return () => window.removeEventListener('storage', onStorage);
+  }, []);
+
+  const translations = {
+    en: {
+      taglineSmall: 'Funding Your Future. Trading Your Way.',
+      hero: ['TRADE YOUR', 'EDGE.', 'WE FUND YOUR', 'SUCCESS.'],
+      heroLead: 'Get funded up to $200,000 and keep up to 90% of the profits.\nNo personal risk. No hidden fees. Just real capital for real traders.',
+      ctaPrimary: 'GET FUNDED NOW →',
+      ctaSecondary: 'SEE PROGRAMS ↗',
+      stats: [
+        { number: '$200K', label: 'Max Funding' },
+        { number: '90%', label: 'Profit Split' },
+        { number: '1200+', label: 'Traders Funded' },
+        { number: 'PAYOUTS', label: 'Fast & Reliable' },
+      ],
+      plansHeadingSmall: 'PLANS',
+      plansTitle: 'Choose the right challenge for your trading style.',
+      plansDesc: 'Explore each category through a polished, branded comparison table built for MyFXFunding.',
+      categories: {
+        standard: 'Standard',
+        swing: 'Swing Trader',
+        aggressive: 'Aggressive',
+        consistency: 'Consistency',
+        elite: 'Elite',
+        crypto: 'Crypto',
+      },
+      table: {
+        accountSize: 'Account size',
+        price: 'Price',
+      },
+      tableLabels: {
+        minTradingDays: 'Minimum trading days',
+        dailyLoss: 'Maximum daily loss',
+        totalLoss: 'Maximum total loss',
+        profitTarget: 'Profit target',
+        maxLeverage: 'Max leverage',
+        profitSplit: 'Profit split',
+        duration: 'Duration',
+        type: 'Type',
+      }
+    },
+    es: {
+      taglineSmall: 'Financiando tu futuro. Opera a tu manera.',
+      hero: ['OPERA TU', 'VENTAJA.', 'NOSOTROS FINANCIAMOS', 'TU ÉXITO.'],
+      heroLead: 'Obtén financiamiento hasta $200,000 y conserva hasta el 90% de las ganancias.\nSin riesgo personal. Sin tarifas ocultas. Solo capital real para traders reales.',
+      ctaPrimary: 'OBTÉN FINANCIAMIENTO →',
+      ctaSecondary: 'VER PROGRAMAS ↗',
+      stats: [
+        { number: '$200K', label: 'Financiamiento Máx.' },
+        { number: '90%', label: 'Distribución de Ganancias' },
+        { number: '1200+', label: 'Traders Financiados' },
+        { number: 'PAGOS', label: 'Rápidos y Confiables' },
+      ],
+      plansHeadingSmall: 'PLANES',
+      plansTitle: 'Elige el reto adecuado para tu estilo de trading.',
+      plansDesc: 'Explora cada categoría a través de una tabla comparativa pulida y con la marca MyFXFunding.',
+      categories: {
+        standard: 'Estándar',
+        swing: 'Swing Trader',
+        aggressive: 'Agresivo',
+        consistency: 'Consistencia',
+        elite: 'Élite',
+        crypto: 'Cripto',
+      },
+      table: {
+        accountSize: 'Tamaño de cuenta',
+        price: 'Precio',
+      },
+      tableLabels: {
+        minTradingDays: 'Días mínimos de trading',
+        dailyLoss: 'Pérdida diaria máxima',
+        totalLoss: 'Pérdida total máxima',
+        profitTarget: 'Objetivo de beneficio',
+        maxLeverage: 'Apalancamiento máx.',
+        profitSplit: 'Distribución de ganancias',
+        duration: 'Duración',
+        type: 'Tipo',
+      }
+    }
+  };
+
+  const t = translations[lang] || translations.en;
 
   return (
-    <div className="min-h-screen bg-black text-white overflow-hidden">
+    <div className={`${theme === 'dark' ? 'min-h-screen bg-black text-white' : 'min-h-screen bg-white text-black'} overflow-hidden`}>
       {/* Navbar */}
       <SiteHeader />
 
@@ -152,43 +261,36 @@ export default function MyFXFundingLandingPage() {
           {/* Left Content */}
           <div className="pt-4 sm:pt-8 md:pt-0 max-w-3xl">
             <p className="text-[#19F57A] uppercase tracking-[0.2em] text-xs font-bold mb-4 sm:mb-6">
-              Funding Your Future. Trading Your Way.
+              {t.taglineSmall}
             </p>
 
             <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-black leading-[0.95] tracking-tight max-w-2xl">
-              TRADE YOUR
+              {t.hero[0]}
               <br />
-              <span className="text-[#19F57A]">EDGE.</span>
+              <span className="text-[#19F57A]">{t.hero[1]}</span>
               <br />
-              WE FUND YOUR
+              {t.hero[2]}
               <br />
-              <span className="text-[#19F57A]">SUCCESS.</span>
+              <span className="text-[#19F57A]">{t.hero[3]}</span>
             </h2>
 
-            <p className="mt-6 sm:mt-10 text-zinc-300 text-sm sm:text-base md:text-lg leading-relaxed max-w-xl font-light">
-              Get funded up to $200,000 and keep up to 90% of the profits.
-              <br />
-              No personal risk. No hidden fees. Just real capital for real traders.
+            <p className={`mt-6 sm:mt-10 ${theme === 'dark' ? 'text-zinc-300' : 'text-zinc-700'} text-sm sm:text-base md:text-lg leading-relaxed max-w-xl font-light whitespace-pre-line`}>
+              {t.heroLead}
             </p>
 
             <div className="flex flex-col sm:flex-row flex-wrap gap-3 sm:gap-4 mt-8 sm:mt-12">
-              <button className="px-6 sm:px-8 py-3.5 sm:py-4 rounded-full border border-[#19F57A]/30 bg-gradient-to-r from-[#19F57A]/18 via-white/10 to-transparent text-white font-black text-xs sm:text-sm md:text-base uppercase tracking-[0.18em] hover:scale-105 transition duration-200 ease-out shadow-[0_0_46px_rgba(25,245,122,0.24)] backdrop-blur-xl hover:border-[#19F57A]/50 hover:shadow-[0_0_60px_rgba(25,245,122,0.32)] w-full sm:w-auto">
-                GET FUNDED NOW →
+              <button className={`px-6 sm:px-8 py-3.5 sm:py-4 rounded-full border border-[#19F57A]/30 ${theme === 'dark' ? 'bg-gradient-to-r from-[#19F57A]/18 via-white/10 to-transparent text-white' : 'bg-[#eaf7ee] text-black'} font-black text-xs sm:text-sm md:text-base uppercase tracking-[0.18em] hover:scale-105 transition duration-200 ease-out shadow-[0_0_46px_rgba(25,245,122,0.24)] backdrop-blur-xl hover:border-[#19F57A]/50 hover:shadow-[0_0_60px_rgba(25,245,122,0.32)] w-full sm:w-auto`}>
+                {t.ctaPrimary}
               </button>
 
-              <button className="px-6 sm:px-8 py-3.5 sm:py-4 rounded-full border border-[#19F57A]/40 bg-black/20 text-[#19F57A] font-semibold text-xs sm:text-sm md:text-base uppercase tracking-[0.18em] hover:scale-105 transition duration-200 ease-out shadow-[0_0_26px_rgba(25,245,122,0.16)] backdrop-blur-xl hover:bg-[#0f2318]/65 hover:border-[#19F57A]/55 w-full sm:w-auto">
-                SEE PROGRAMS ↗
+              <button className={`px-6 sm:px-8 py-3.5 sm:py-4 rounded-full border border-[#19F57A]/40 ${theme === 'dark' ? 'bg-black/20 text-[#19F57A]' : 'bg-white/60 text-[#0f9a50]'} font-semibold text-xs sm:text-sm md:text-base uppercase tracking-[0.18em] hover:scale-105 transition duration-200 ease-out shadow-[0_0_26px_rgba(25,245,122,0.16)] backdrop-blur-xl hover:bg-[#0f2318]/65 hover:border-[#19F57A]/55 w-full sm:w-auto">
+                {t.ctaSecondary}
               </button>
             </div>
 
             {/* Stats */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-3 md:gap-4 mt-10 sm:mt-16 max-w-2xl">
-              {[
-                { number: '$200K', label: 'Max Funding' },
-                { number: '90%', label: 'Profit Split' },
-                { number: '1200+', label: 'Traders Funded' },
-                { number: 'PAYOUTS', label: 'Fast & Reliable' },
-              ].map((item, index) => (
+              {t.stats.map((item, index) => (
                 <div
                   key={index}
                   className="p-2 sm:p-3 md:p-4 rounded-xl sm:rounded-2xl border border-[#19F57A]/40 bg-[#19F57A]/10 backdrop-blur-md"
@@ -209,13 +311,13 @@ export default function MyFXFundingLandingPage() {
         <div className="max-w-7xl mx-auto">
           <div className="mb-10 text-center">
             <p className="text-[#19F57A] uppercase tracking-[0.18em] text-xs font-bold mb-3">
-              PLANS
+              {t.plansHeadingSmall}
             </p>
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-black leading-tight">
-              Choose the right challenge for your trading style.
+              {t.plansTitle}
             </h2>
-            <p className="text-zinc-400 max-w-2xl mx-auto mt-4 text-sm sm:text-base leading-relaxed">
-              Explore each category through a polished, branded comparison table built for MyFXFunding.
+            <p className={`${theme === 'dark' ? 'text-zinc-400' : 'text-zinc-700'} max-w-2xl mx-auto mt-4 text-sm sm:text-base leading-relaxed`}>
+              {t.plansDesc}
             </p>
           </div>
 
@@ -230,92 +332,75 @@ export default function MyFXFundingLandingPage() {
                     : 'bg-[#0a1710]/80 text-zinc-300 border border-white/10 hover:bg-[#182d1c]'
                 }`}
               >
-                {category.label}
+                {t.categories[category.id] || category.label}
               </button>
             ))}
           </div>
-
           <div className="overflow-hidden rounded-[32px] border border-[#19F57A]/20 bg-[#04110b]/80 shadow-[0_0_80px_rgba(25,245,122,0.08)]">
-            {activeCategory === 'all' ? (
-              <div className="p-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                {planCategories.filter((category) => category.id !== 'all').map((category) => (
-                  <div key={category.id} className="rounded-3xl border border-[#19F57A]/15 bg-[#081612]/90 p-6 shadow-[0_0_18px_rgba(25,245,122,0.08)]">
-                    <div className="mb-4 text-sm text-[#19F57A] uppercase tracking-[0.18em] font-semibold">{category.label}</div>
-                    <div className="space-y-3 text-sm text-zinc-300">
-                      <div>Plans: {category.plans.map((plan) => plan.size).join(', ')}</div>
-                      <div>Target: {category.rules.profitTarget}</div>
-                      <div>Daily loss: {category.rules.dailyLoss}</div>
-                      <div>Split: {category.rules.profitSplit}</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              (() => {
-                const category = planCategories.find((item) => item.id === activeCategory);
-                if (!category) return null;
+            {(() => {
+              const category = planCategories.find((item) => item.id === activeCategory);
+              if (!category) return null;
 
-                const tableRows = [
-                  { label: 'Minimum trading days', value: category.rules.minTradingDays },
-                  { label: 'Maximum daily loss', value: category.rules.dailyLoss },
-                  { label: 'Maximum total loss', value: category.rules.totalLoss },
-                  { label: 'Profit target', value: category.rules.profitTarget, highlight: true },
-                  { label: 'Max leverage', value: category.rules.leverage },
-                  { label: 'Profit split', value: category.rules.profitSplit, highlight: true },
-                  { label: 'Duration', value: category.rules.duration },
-                  { label: 'Type', value: category.rules.type },
-                ];
+              const tableRows = [
+                { label: t.tableLabels.minTradingDays, value: category.rules.minTradingDays },
+                { label: t.tableLabels.dailyLoss, value: category.rules.dailyLoss },
+                { label: t.tableLabels.totalLoss, value: category.rules.totalLoss },
+                { label: t.tableLabels.profitTarget, value: category.rules.profitTarget, highlight: true },
+                { label: t.tableLabels.maxLeverage, value: category.rules.leverage },
+                { label: t.tableLabels.profitSplit, value: category.rules.profitSplit, highlight: true },
+                { label: t.tableLabels.duration, value: category.rules.duration },
+                { label: t.tableLabels.type, value: category.rules.type },
+              ];
 
-                return (
-                  <div className="overflow-x-auto p-6">
-                    <table className="min-w-[740px] w-full border-separate border-spacing-y-3 text-left">
-                      <thead>
-                        <tr>
-                          <th className="w-[240px] rounded-l-3xl bg-[#12301f] px-6 py-4 text-xs uppercase tracking-[0.18em] text-white font-semibold">Account size</th>
-                          {category.plans.map((plan, index) => (
-                            <th
-                              key={plan.size}
-                              className={`px-6 py-4 text-center text-xs uppercase tracking-[0.18em] text-white font-semibold ${
-                                index === category.plans.length - 1 ? 'rounded-r-3xl bg-[#0a1f13]' : 'bg-[#0a1f13]'
-                              }`}
-                            >
-                              {plan.size}
-                            </th>
-                          ))}
-                        </tr>
-                      </thead>
-
-                      <tbody>
-                        {tableRows.map((row) => (
-                          <tr key={row.label} className="bg-[#081610] shadow-[0_0_12px_rgba(0,0,0,0.15)]">
-                            <td className="bg-[#06120c] px-6 py-5 font-semibold text-zinc-200">{row.label}</td>
-                            {category.plans.map((plan) => (
-                              <td
-                                key={`${row.label}-${plan.size}`}
-                                className={`px-6 py-5 text-center text-sm ${row.highlight ? 'text-[#19F57A] font-semibold' : 'text-zinc-300'}`}
-                              >
-                                {row.value}
-                              </td>
-                            ))}
-                          </tr>
+              return (
+                <div className="overflow-x-auto p-6">
+                  <table className="min-w-[740px] w-full border-separate border-spacing-y-3 text-left">
+                    <thead>
+                      <tr>
+                        <th className="w-[240px] rounded-l-3xl bg-[#12301f] px-6 py-4 text-xs uppercase tracking-[0.18em] text-white font-semibold">{t.table.accountSize}</th>
+                        {category.plans.map((plan, index) => (
+                          <th
+                            key={plan.size}
+                            className={`px-6 py-4 text-center text-xs uppercase tracking-[0.18em] text-white font-semibold ${
+                              index === category.plans.length - 1 ? 'rounded-r-3xl bg-[#0a1f13]' : 'bg-[#0a1f13]'
+                            }`}
+                          >
+                            {plan.size}
+                          </th>
                         ))}
+                      </tr>
+                    </thead>
 
-                        <tr className="bg-[#081610] shadow-[0_0_12px_rgba(0,0,0,0.15)] rounded-b-3xl">
-                          <td className="bg-[#06120c] px-6 py-6 font-semibold text-zinc-200">Price</td>
+                    <tbody>
+                      {tableRows.map((row) => (
+                        <tr key={row.label} className="bg-[#081610] shadow-[0_0_12px_rgba(0,0,0,0.15)]">
+                          <td className="bg-[#06120c] px-6 py-5 font-semibold text-zinc-200">{row.label}</td>
                           {category.plans.map((plan) => (
-                            <td key={`price-${plan.size}`} className="px-6 py-6 text-center">
-                              <button className="inline-flex min-w-[120px] justify-center rounded-full border border-[#19F57A]/30 bg-[#19F57A]/10 px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#19F57A]/20">
-                                {plan.price}
-                              </button>
+                            <td
+                              key={`${row.label}-${plan.size}`}
+                              className={`px-6 py-5 text-center text-sm ${row.highlight ? 'text-[#19F57A] font-semibold' : 'text-zinc-300'}`}
+                            >
+                              {row.value}
                             </td>
                           ))}
                         </tr>
-                      </tbody>
-                    </table>
-                  </div>
-                );
-              })()
-            )}
+                      ))}
+
+                      <tr className="bg-[#081610] shadow-[0_0_12px_rgba(0,0,0,0.15)] rounded-b-3xl">
+                        <td className="bg-[#06120c] px-6 py-6 font-semibold text-zinc-200">{t.table.price}</td>
+                        {category.plans.map((plan) => (
+                          <td key={`price-${plan.size}`} className="px-6 py-6 text-center">
+                            <button className="inline-flex min-w-[120px] justify-center rounded-full border border-[#19F57A]/30 bg-[#19F57A]/10 px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#19F57A]/20">
+                              {plan.price}
+                            </button>
+                          </td>
+                        ))}
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              );
+            })()}
           </div>
         </div>
       </section>
